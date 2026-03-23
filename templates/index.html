@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoológico - Venta de Boletos</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f9; padding: 20px; }
+        .sucursal-card { border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 5px; background: white; }
+        .btn { background: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; display: inline-block; }
+        .btn:hover { background: #218838; }
+    </style>
+</head>
+<body>
+    <h1>Nuestros Zoológicos</h1>
+    <p>Selecciona una sucursal para comprar tus boletos:</p>
+
+    {% for s in sucursales %}
+    <div class="sucursal-card">
+        <h3>{{ s.nombre if s.nombre else s[1] }}</h3>
+        <p>Ubicación: {{ s.ubicacion if s.ubicacion else s[2] }}</p>
+        <!-- Asumiendo que s.id o s[0] es la llave primaria de la sucursal -->
+        <a href="{{ url_for('comprar_boleto', sucursal_id=(s.id if s.id else s[0])) }}" class="btn">Comprar Boletos Aquí</a>
+    </div>
+    {% else %}
+    <p>No hay sucursales disponibles en este momento.</p>
+    {% endfor %}
+
+</body>
+</html>
