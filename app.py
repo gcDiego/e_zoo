@@ -1,55 +1,76 @@
 from flask import Flask, render_template, request, redirect, url_for
 import pyodbc
+import uuid
 
 app = Flask(__name__)
 
 # Función para obtener la conexión a la base de datos
 def get_db_connection():
-    server = 'localhost'
-    database = 'Zoologico'
-    username = 'sa'
-    password = 'PassWORD123!'
-    # Nota: Agregamos TrustServerCertificate=yes para evitar problemas locales con certificados en ODBC 18
-    connection_string = f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password};TrustServerCertificate=yes;'
+    connection_string = (
+        "DRIVER={ODBC Driver 18 for SQL Server};"
+        "SERVER=127.0.0.1,1433;"
+        "DATABASE=Zoologico;"
+        "UID=sa;"
+        "PWD=PassWORD123!;"
+        "Encrypt=yes;"
+        "TrustServerCertificate=yes;"
+    )
     conn = pyodbc.connect(connection_string)
     return conn
 
-# 1. Mostrar sucursales (READ parcial)
+# 1. Mostrar sucursales (READ parcial de la tabla Zoologico)
 @app.route('/')
 def index():
     sucursales = []
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT id, nombre, ubicacion FROM Sucursales")
+        cursor.execute("SELECT Id_zoologico, Nombre, Ciudad, Pais FROM Zoologico")
         sucursales = cursor.fetchall()
         conn.close()
     except Exception as e:
-        print("Error al obtener sucursales o la tabla no existe:", e)
-        # Mock de datos para que puedas visualizar la página si aún no hay base de datos
+        print("Error al obtener zoologicos o la tabla no existe:", e)
+        # Mock de datos si aún no hay base de datos o da error
         sucursales = [
-            {'id': 1, 'nombre': 'Zoo Central (Demo)', 'ubicacion': 'Ciudad de México'},
-            {'id': 2, 'nombre': 'Zoo Safari (Demo)', 'ubicacion': 'Monterrey'}
+            {'Id_zoologico': '11111111-1111-1111-1111-111111111111', 'Nombre': 'Zoo Central (Demo)', 'Ciudad': 'Ciudad de México', 'Pais': 'México'},
+            {'Id_zoologico': '22222222-2222-2222-2222-222222222222', 'Nombre': 'Zoo Safari (Demo)', 'Ciudad': 'Monterrey', 'Pais': 'México'}
         ]
         
     return render_template('index.html', sucursales=sucursales)
 
-# 2. Venta de boletos (CREATE)
-@app.route('/comprar/<int:sucursal_id>', methods=['GET', 'POST'])
-def comprar_boleto(sucursal_id):
+# 2. Venta de boletos (CREATE en Tabla_boleto)
+@app.route('/comprar/<string:id_zoologico>', methods=['GET', 'POST'])
+def comprar_boleto(id_zoologico):
+    # Obtener el nombre del Zoológico para mostrarlo bonito en el formulario
+    nombre_zoo = "Desconocido"
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT Nombre FROM Zoologico WHERE Id_zoologico = ?", (id_zoologico,))
+        row = cursor.fetchone()
+        if row:
+            nombre_zoo = row[0]
+        conn.close()
+    except Exception as e:
+        print("No se pudo obtener el nombre del zoológico:", e)
+
     if request.method == 'POST':
-        nombre_visitante = request.form['nombre_visitante']
-        tipo_boleto = request.form['tipo_boleto']
-        cantidad = request.form['cantidad']
+        nombre_usuario = request.form['nombre_usuario']
+        correo_electronico = request.form['correo_electronico']
+        n_telefono = request.form['n_telefono']
         
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
-            # Insertar en la tabla Boletos
+            
+            # Generar un UUID para el nuevo boleto
+            id_boleto = str(uuid.uuid4())
+
+            # Insertar en Tabla_boleto
             cursor.execute('''
-                INSERT INTO Boletos (sucursal_id, nombre_visitante, tipo_boleto, cantidad)
-                VALUES (?, ?, ?, ?)
-            ''', (sucursal_id, nombre_visitante, tipo_boleto, cantidad))
+                INSERT INTO Tabla_boleto (Id_boleto, Id_zoologico, Nombre_usuario, Correo_electronico, N_telefono)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (id_boleto, id_zoologico, nombre_usuario, correo_electronico, n_telefono))
             
             conn.commit()
             conn.close()
@@ -59,7 +80,7 @@ def comprar_boleto(sucursal_id):
             return f"Ocurrió un error al guardar el boleto: {e}"
 
     # Mostrar el formulario
-    return render_template('create_ticket.html', sucursal_id=sucursal_id)
+    return render_template('create_ticket.html', id_zoologico=id_zoologico, nombre_zoo=nombre_zoo)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
