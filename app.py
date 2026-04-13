@@ -11,8 +11,7 @@ def get_db_connection():
         "SERVER=127.0.0.1,1433;"
         "DATABASE=Zoologico;"
         "UID=sa;"
-        "PWD=PassWORD123!;"
-        "Encrypt=yes;"
+        "PWD=TuPasswordSeguro123!;"
         "TrustServerCertificate=yes;"
     )
     conn = pyodbc.connect(connection_string)
@@ -25,7 +24,7 @@ def index():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT Id_zoologico, Nombre, Ciudad, Pais FROM Zoologico")
+        cursor.execute("SELECT Id_zoologico, Nombre, Ciudad, Pais FROM Zoologico.Zoologico")
         sucursales = cursor.fetchall()
         conn.close()
     except Exception as e:
@@ -46,7 +45,7 @@ def comprar_boleto(id_zoologico):
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT Nombre FROM Zoologico WHERE Id_zoologico = ?", (id_zoologico,))
+        cursor.execute("SELECT Nombre FROM Zoologico.Zoologico WHERE Id_zoologico = ?", (id_zoologico,))
         row = cursor.fetchone()
         if row:
             nombre_zoo = row[0]
@@ -68,7 +67,7 @@ def comprar_boleto(id_zoologico):
 
             # Insertar en Tabla_boleto
             cursor.execute('''
-                INSERT INTO Tabla_boleto (Id_boleto, Id_zoologico, Nombre_usuario, Correo_electronico, N_telefono)
+                INSERT INTO Zoologico.Tabla_boleto (Id_boleto, Id_zoologico, Nombre_usuario, Correo_electronico, N_telefono)
                 VALUES (?, ?, ?, ?, ?)
             ''', (id_boleto, id_zoologico, nombre_usuario, correo_electronico, n_telefono))
             
@@ -81,6 +80,11 @@ def comprar_boleto(id_zoologico):
 
     # Mostrar el formulario
     return render_template('create_ticket.html', id_zoologico=id_zoologico, nombre_zoo=nombre_zoo)
+
+# Nueva ruta para la página "Quienes Somos"
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

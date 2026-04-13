@@ -3,6 +3,9 @@
     --secondary-color: #4caf50;
     --bg-color: #f4f7f6;
     --text-color: #333;
+    --card-bg-color: #ffffff;
+    --shadow-light: 0 4px 10px rgba(0,0,0,0.05);
+    --shadow-medium: 0 8px 15px rgba(0,0,0,0.1);
 }
 
 body {
@@ -11,6 +14,58 @@ body {
     padding: 0;
     background-color: var(--bg-color);
     color: var(--text-color);
+    line-height: 1.6;
+}
+
+/* Barra de navegación */
+.navbar {
+    background-color: var(--card-bg-color);
+    box-shadow: var(--shadow-light);
+    padding: 10px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.navbar-brand {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.navbar-nav {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-item {
+    margin-left: 20px;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: bold;
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.nav-link:hover, .nav-link.active {
+    background-color: var(--primary-color);
+    color: #ffffff;
 }
 
 /* Header principal */
@@ -45,9 +100,58 @@ body {
     font-size: 2.2rem;
     color: var(--primary-color);
     margin-bottom: 40px;
+    position: relative;
+    padding-bottom: 10px;
 }
 
-/* Grid para sucursales */
+.section-title::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background-color: var(--primary-color);
+    border-radius: 2px;
+}
+
+/* Secciones y Tarjetas */
+.section {
+    margin-bottom: 60px;
+    padding: 20px 0;
+}
+
+.card {
+    background: var(--card-bg-color);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: var(--shadow-light);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 30px; /* Espacio entre tarjetas si hay varias en una sección */
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-medium);
+}
+
+.card h2 {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    margin-top: 0;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: 10px;
+}
+
+.card p {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+/* Grid para sucursales (mantener si es relevante para otras páginas) */
 .grid-sucursales {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -55,22 +159,23 @@ body {
 }
 
 .sucursal-card {
-    background: white;
+    background: var(--card-bg-color);
     border-radius: 10px;
     padding: 40px 20px;
     text-align: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    box-shadow: var(--shadow-light);
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .sucursal-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-medium);
 }
 
 .card-icon {
     font-size: 4rem;
     margin-bottom: 15px;
+    color: var(--primary-color);
 }
 
 .sucursal-card h3 {
@@ -103,10 +208,10 @@ body {
 
 /* Formulario */
 .form-container {
-    background: white;
+    background: var(--card-bg-color);
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    box-shadow: var(--shadow-light);
     max-width: 450px;
     margin: 0 auto;
 }
