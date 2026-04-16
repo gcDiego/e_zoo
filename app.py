@@ -20,7 +20,6 @@ def get_db_connection():
 # 1. Mostrar sucursales (READ parcial de la tabla Zoologico)
 @app.route('/')
 def index():
-    sucursales = []
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -40,7 +39,6 @@ def index():
 # 2. Venta de boletos (CREATE en Tabla_boleto)
 @app.route('/comprar/<string:id_zoologico>', methods=['GET', 'POST'])
 def comprar_boleto(id_zoologico):
-    # Obtener el nombre del Zoológico para mostrarlo bonito en el formulario
     nombre_zoo = "Desconocido"
     try:
         conn = get_db_connection()
@@ -61,11 +59,9 @@ def comprar_boleto(id_zoologico):
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
-            
-            # Generar un UUID para el nuevo boleto
+
             id_boleto = str(uuid.uuid4())
 
-            # Insertar en Tabla_boleto
             cursor.execute('''
                 INSERT INTO Zoologico.Tabla_boleto (Id_boleto, Id_zoologico, Nombre_usuario, Correo_electronico, N_telefono)
                 VALUES (?, ?, ?, ?, ?)
@@ -81,7 +77,6 @@ def comprar_boleto(id_zoologico):
     # Mostrar el formulario
     return render_template('create_ticket.html', id_zoologico=id_zoologico, nombre_zoo=nombre_zoo)
 
-# Nueva ruta para la página "Quienes Somos"
 @app.route('/about')
 def about():
     return render_template('about.html')
