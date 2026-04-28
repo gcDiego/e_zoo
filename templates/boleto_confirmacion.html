@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boleto Confirmado - ZooTicket</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #f0ede8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        /* ── Ticket container ── */
+        .ticket-wrapper {
+            width: 100%;
+            max-width: 480px;
+            animation: slideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .ticket {
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        /* ── Header verde ── */
+        .ticket-header {
+            background: #2e7d32;
+            padding: 28px 32px 24px;
+            color: white;
+            position: relative;
+        }
+
+        .ticket-header .zoo-name {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.1rem;
+            opacity: 0.85;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .ticket-header h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2rem;
+            line-height: 1.1;
+            margin-top: 4px;
+        }
+
+        .ticket-header .badge {
+            display: inline-block;
+            margin-top: 12px;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.35);
+            color: white;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        /* ── Separador con muescas ── */
+        .tear {
+            height: 28px;
+            background: #fff;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .tear::before, .tear::after {
+            content: '';
+            position: absolute;
+            width: 28px; height: 28px;
+            background: #f0ede8;
+            border-radius: 50%;
+            top: 0;
+        }
+        .tear::before { left: -14px; }
+        .tear::after  { right: -14px; }
+        .tear-dashes {
+            flex: 1;
+            border-top: 2px dashed #d0c9be;
+            margin: 0 20px;
+        }
+
+        /* ── Cuerpo del boleto ── */
+        .ticket-body {
+            padding: 8px 32px 28px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px 16px;
+            margin-bottom: 24px;
+        }
+
+        .info-item label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #9e8f7e;
+            margin-bottom: 3px;
+        }
+
+        .info-item span {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #2a2a2a;
+        }
+
+        .info-item.full { grid-column: 1 / -1; }
+
+        /* ── ID del boleto grande ── */
+        .boleto-id {
+            background: #f7f4ef;
+            border: 1px solid #e5ddd0;
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-family: 'DM Mono', 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #5a4f42;
+            letter-spacing: 0.05em;
+            word-break: break-all;
+        }
+
+        /* ── Separador QR ── */
+        .qr-separator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0 16px;
+            color: #b0a090;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .qr-separator::before,
+        .qr-separator::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e5ddd0;
+        }
+
+        /* ── QR ── */
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .qr-img {
+            width: 180px;
+            height: 180px;
+            border-radius: 12px;
+            border: 4px solid #2e7d32;
+            padding: 6px;
+            background: white;
+        }
+
+        .qr-hint {
+            font-size: 0.78rem;
+            color: #9e8f7e;
+            text-align: center;
+        }
+
+        /* ── Footer del boleto ── */
+        .ticket-footer {
+            background: #f7f4ef;
+            border-top: 1px solid #e5ddd0;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* ── Botón volver ── */
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 24px;
+            background: #2e7d32;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .btn-back:hover {
+            background: #1b5e20;
+            transform: translateY(-1px);
+        }
+
+        /* ── Imprimir ── */
+        .btn-print {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            background: transparent;
+            color: #5a7c5e;
+            border: 1.5px solid #5a7c5e;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .btn-print:hover {
+            background: #5a7c5e;
+            color: white;
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        /* ── Print styles ── */
+        @media print {
+            body { background: white; }
+            .actions { display: none; }
+            .ticket { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="ticket-wrapper">
+    <div class="ticket">
+
+        <!-- CABECERA -->
+        <div class="ticket-header">
+            <div class="zoo-name">🦁 ZooTicket</div>
+            <h1>Boleto<br>Confirmado</h1>
+            <span class="badge">✓ Válido para entrada</span>
+        </div>
+
+        <!-- MUESCA PERFORADA -->
+        <div class="tear">
+            <div class="tear-dashes"></div>
+        </div>
+
+        <!-- CUERPO -->
+        <div class="ticket-body">
+            <div class="info-grid">
+
+                <div class="info-item full">
+                    <label>Visitante</label>
+                    <span>{{ boleto.visitante }}</span>
+                </div>
+
+                <div class="info-item">
+                    <label>Tipo de boleto</label>
+                    <span>{{ boleto.tipo }}</span>
+                </div>
+
+                <div class="info-item">
+                    <label>Cantidad</label>
+                    <span>{{ boleto.cantidad }} boleto(s)</span>
+                </div>
+
+                <div class="info-item">
+                    <label>Sucursal</label>
+                    <span>#{{ boleto.sucursal_id }}</span>
+                </div>
+
+                <div class="info-item">
+                    <label>Fecha</label>
+                    <span>{{ boleto.fecha }}</span>
+                </div>
+
+                <div class="info-item full">
+                    <label>ID del boleto</label>
+                    <div class="boleto-id">{{ boleto.boleto_id }}</div>
+                </div>
+
+            </div>
+
+            <!-- CÓDIGO QR -->
+            <div class="qr-separator">Código QR de acceso</div>
+            <div class="qr-container">
+                <img
+                    class="qr-img"
+                    src="data:image/png;base64,{{ qr_base64 }}"
+                    alt="Código QR del boleto {{ boleto.boleto_id }}"
+                >
+                <p class="qr-hint">Presenta este código en la entrada del zoológico</p>
+            </div>
+        </div>
+
+        <!-- PIE DEL BOLETO -->
+        <div class="ticket-footer">
+            <small style="color:#9e8f7e;font-size:0.72rem;text-align:center;">
+                © 2026 ZooTicket · Toluca, México · zooticket@gmail.com
+            </small>
+        </div>
+
+    </div>
+
+    <!-- BOTONES EXTERNOS AL TICKET -->
+    <div class="actions">
+        <a href="{{ url_for('index') }}" class="btn-back">← Volver al inicio</a>
+        <button class="btn-print" onclick="window.print()">🖨 Imprimir boleto</button>
+    </div>
+</div>
+
+</body>
+</html>

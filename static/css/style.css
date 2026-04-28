@@ -278,3 +278,63 @@ footer {
     color: white;
     margin-top: 50px;
 }
+/* Mensaje de compra exitosa */
+.alert-success {
+    background: linear-gradient(135deg, #28a745, #5cd65c);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin: 15px 0;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Animación suave */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* Estilo base para alertas */
+.alert {
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 500;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+/* SOLO para éxito (tu compra) */
+.alert.success {
+    background: linear-gradient(135deg, #28a745, #4cd964);
+    color: white;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    border-left: 6px solid #1e7e34;
+}
+
+/* (Opcional) error por si luego lo usas */
+.alert.error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* Animación */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(  0);
+    }
+}

@@ -1,30 +1,43 @@
 {% extends "base.html" %}
 
-{% block title %}Inicio - Zoológicos{% endblock %}
+{% block title %}Zoológico - Venta de Boletos{% endblock %}
 
 {% block content %}
-<header class="hero">
-    <h1>¡Bienvenido a la red de Zoológicos!</h1>
-    <p>Vive la experiencia de la naturaleza de cerca. Selecciona un destino para comenzar.</p>
-</header>
 
-<main class="container">
+<!-- Hero -->
+<div class="hero">
+    <h1>🦁 Bienvenido a e-Zoo</h1>
+    <p>Compra tus boletos en línea y disfruta de una experiencia única en nuestros zoológicos. Sin filas, sin esperas.</p>
+</div>
+
+<!-- Sucursales -->
+<div class="container">
     <h2 class="section-title">Nuestras Sucursales</h2>
 
     <div class="grid-sucursales">
         {% for s in sucursales %}
-        <div class="sucursal-card">
-            <div class="card-icon">🦁</div>
-            <h3>{{ s.Nombre if s.Nombre else s[1] }}</h3>
-            <p>📍 {{ s.Ciudad if s.Ciudad else s[2] }}, {{ s.Pais if s.Pais else s[3] }}</p>
+        {% if s is mapping %}
+        {% set sid    = s['id'] %}
+        {% set snombre = s['nombre'] %}
+        {% set subic  = s['ubicacion'] %}
+        {% else %}
+        {% set sid    = s[0] %}
+        {% set snombre = s[1] %}
+        {% set subic  = s[2] %}
+        {% endif %}
 
-            <a href="{{ url_for('comprar_boleto', id_zoologico=(s.Id_zoologico if s.Id_zoologico else s[0])) }}" class="btn">Comprar Boletos</a>
+        <div class="sucursal-card">
+            <div class="card-icon">🌿</div>
+            <h3>{{ snombre }}</h3>
+            <p>{{ subic }}</p>
+            <a href="{{ url_for('comprar_boleto', sucursal_id=sid) }}" class="btn">
+                Comprar Boletos
+            </a>
         </div>
         {% else %}
-        <div style="grid-column: 1 / -1; text-align: center; color: #666; font-size: 1.2rem;">
-            <p>No hay zoológicos disponibles en este momento. Vuelve más tarde.</p>
-        </div>
+        <p>No hay sucursales disponibles en este momento.</p>
         {% endfor %}
     </div>
-</main>
+</div>
+
 {% endblock %}
