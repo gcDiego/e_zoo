@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Panel de Administración{% endblock %}
+
+{% block content %}
+<style>
+    .dashboard-container { padding: 40px 20px; max-width: 1000px; margin: 0 auto; }
+    .table-responsive { overflow-x: auto; background: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .styled-table { width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px; }
+    .styled-table thead tr { background-color: #2e7d32; color: #ffffff; text-align: left; }
+    .styled-table th, .styled-table td { padding: 15px 20px; }
+    .styled-table tbody tr { border-bottom: 1px solid #dddddd; }
+    .styled-table tbody tr:nth-of-type(even) { background-color: #f9f9f9; }
+    .styled-table tbody tr:last-of-type { border-bottom: 2px solid #2e7d32; }
+    .empty-msg { text-align: center; padding: 20px; color: #666; }
+</style>
+
+<div class="dashboard-container">
+    <h2 style="margin-bottom: 20px; color: #2a2a2a;">Boletos Emitidos</h2>
+
+    <div class="table-responsive">
+        <table class="styled-table">
+            <thead>
+            <tr>
+                <th>ID Boleto</th>
+                <th>Sucursal</th>
+                <th>Visitante</th>
+                <th>Correo</th>
+                <th>Teléfono</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for b in boletos %}
+            <tr>
+                <td style="font-family: monospace; font-size: 0.85rem;">{{ b[0] }}</td>
+                <td>{{ b[1] }}</td>
+                <td>{{ b[2] }}</td>
+                <td>{{ b[3] }}</td>
+                <td>{{ b[4] }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="empty-msg">No hay boletos registrados en el sistema.</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

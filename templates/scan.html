@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Escanear Boleto - Administración{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="section-title">Escanear Código QR de Boleto</h2>
+    <div id="scanner-container">
+        <p>Apunte la cámara al código QR del boleto.</p>
+        <video id="qr-video" playsinline></video>
+        <canvas id="qr-canvas" style="display:none;"></canvas>
+    </div>
+
+    <div id="result-container" style="display:none;">
+        <h3 id="result-title"></h3>
+        <p id="result-message"></p>
+        <div id="ticket-info"></div>
+        <button id="scan-again-btn" class="btn">Escanear Otro</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<script>
+    const video = document.getElementById("qr-video");
+    const canvasElement = document.getElementById("qr-canvas");
+    const canvas = canvasElement.getContext("2d");
+
+    const scannerContainer = document.getElementById("scanner-container");
+    const resultContainer = document.getElementById("result-container");
+    const resultTitle = document.getElementById("result-title");
+    const resultMessage = document.getElementById("result-message");
+    const ticketInfo = document.getElementById("ticket-info");
+    const scanAgainBtn = document.getElementById("scan-again-btn");
+
+    let scanning = true;
+
+    function drawLine(begin, end, color) {
+        canvas.beginPath();
+        canvas.moveTo(begin.x, begin.y);
+        canvas.lineTo(end.x, end.y);
+        canvas.lineWidth = 4;
+        canvas.strokeStyle = color;
+        canvas.stroke();
+    }
+
+    async function tick() {
+        if (!scanning) return;
+
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            canvasElement.height = video.videoHeight;
+            canvasElement.width = video.videoWidth;
+            canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+            const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                inversionAttempts: "dontInvert",
+            });
+
+            if (code) {
+                drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#FF3B58");
+                drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#FF3B58");
+                drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#FF3B58");
+                drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF3B58");
+
+                scanning = false;
+                try {
+                    const data = JSON.parse(code.data);
+                    if (data.boleto_id) {
+                        validateTicket(data.boleto_id);
+                    } else {
+                        showResult("Error", "El código QR no contiene un ID de boleto válido.");
+                    }
+                } catch (e) {
+                    showResult("Error", "El código QR no tiene un formato JSON válido.");
+                }
+            }
+        }
+        requestAnimationFrame(tick);
+    }
+
+    async function validateTicket(boletoId) {
+        try {
+            const response = await fetch(`/api/validar/${boletoId}`);
+            const data = await response.json();
+
+            if (response.ok && data.valido) {
+                showResult("Acceso Permitido", `Bienvenido, ${data.visitante}.`, `Sucursal: ${data.sucursal}`, "success");
+            } else {
+                showResult("Acceso Denegado", data.mensaje || "El boleto no es válido.", null, "error");
+            }
+        } catch (error) {
+            showResult("Error de Red", "No se pudo conectar con el servidor de validación.");
+        }
+    }
+
+    function showResult(title, message, details = null, status = "error") {
+        scannerContainer.style.display = "none";
+        resultContainer.style.display = "block";
+
+        resultTitle.textContent = title;
+        resultMessage.textContent = message;
+
+        resultTitle.className = status;
+
+        if (details) {
+            ticketInfo.textContent = details;
+            ticketInfo.style.display = "block";
+        } else {
+            ticketInfo.style.display = "none";
+        }
+    }
+
+    scanAgainBtn.addEventListener("click", () => {
+        resultContainer.style.display = "none";
+        scannerContainer.style.display = "block";
+        scanning = true;
+        requestAnimationFrame(tick);
+    });
+
+    // Iniciar la cámara
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+        .then(function(stream) {
+            video.srcObject = stream;
+            video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+            video.play();
+            requestAnimationFrame(tick);
+        })
+        .catch(function(err) {
+            console.error("Error al acceder a la cámara", err);
+            alert("No se pudo acceder a la cámara. Asegúrate de dar los permisos necesarios.");
+        });
+</script>
+{% endblock %}

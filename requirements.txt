@@ -1,0 +1,4 @@
+Flask
+pyodbc
+qrcode
+python-dotenv

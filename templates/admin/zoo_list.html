@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Gestionar Zoológicos - Administración{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="admin-header">
+        <h2 class="section-title">Gestionar Sucursales de Zoológicos</h2>
+        <a href="{{ url_for('admin.add_zoologico') }}" class="btn btn-primary">Añadir Nuevo Zoológico</a>
+    </div>
+
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Ciudad</th>
+                <th>País</th>
+                <th>Dirección</th>
+                <th>Teléfono</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for zoo in zoologicos %}
+            <tr>
+                <td>{{ zoo.id_zoologico }}</td>
+                <td>{{ zoo.Nombre }}</td>
+                <td>{{ zoo.Ciudad }}</td>
+                <td>{{ zoo.Pais }}</td>
+                <td>{{ zoo.Direccion }}</td>
+                <td>{{ zoo.Telefono }}</td>
+                <td class="actions">
+                    <a href="{{ url_for('admin.edit_zoologico', id=zoo.id_zoologico) }}" class="btn btn-sm btn-fixed-width">Editar</a>
+                    <form action="{{ url_for('admin.delete_zoologico', id=zoo.id_zoologico) }}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-danger btn-fixed-width" onclick="return confirm('¿Estás seguro de que quieres eliminar este zoológico?');">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7">No hay zoológicos registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

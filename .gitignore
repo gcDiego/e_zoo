@@ -1,0 +1,19 @@
+# Archivos de entorno
+.env
+
+# Directorios de caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Directorios de virtualenv
+.venv/
+venv/
+ENV/
+
+# Archivos del IDE
+.idea/
+*.iml
+
+# Archivos del sistema operativo
+.DS_Store
