@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .header { background-color: #2e7d32; color: white; padding: 30px; text-align: center; }
+        .header h1 { margin: 0; font-size: 28px; }
+        .content { padding: 30px; }
+        .content h2 { color: #2e7d32; }
+        .ticket-details { margin-bottom: 20px; }
+        .ticket-details p { margin: 5px 0; font-size: 16px; }
+        .ticket-details strong { color: #333; }
+        .qr-code { text-align: center; margin-top: 30px; }
+        .qr-code img { max-width: 200px; }
+        .footer { background-color: #f0f0f0; color: #777; padding: 20px; text-align: center; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>¡Tu Boleto para e-Zoo!</h1>
+        </div>
+        <div class="content">
+            <h2>¡Gracias por tu compra, {{ boleto.visitante }}!</h2>
+            <p>Aquí tienes los detalles de tu boleto. Presenta el código QR en la entrada para un acceso rápido.</p>
+
+            <div class="ticket-details">
+                <p><strong>Boleto ID:</strong> {{ boleto.boleto_id }}</p>
+                <p><strong>Sucursal:</strong> {{ boleto.sucursal_nombre }}</p>
+                <p><strong>Tipo:</strong> {{ boleto.tipo }}</p>
+                <p><strong>Cantidad:</strong> {{ boleto.cantidad }}</p>
+                <p><strong>Fecha de Compra:</strong> {{ boleto.fecha }}</p>
+            </div>
+
+            <div class="qr-code">
+                <h3>Tu Código de Acceso</h3>
+                <img src="cid:qr_code" alt="Código QR del Boleto">
+            </div>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 Red de Zoológicos. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>

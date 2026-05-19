@@ -2,3 +2,5 @@ Flask
 pyodbc
 qrcode
 python-dotenv
+Flask-Mail
+Pillow

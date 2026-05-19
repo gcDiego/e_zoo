@@ -289,7 +289,7 @@
 
                 <div class="info-item">
                     <label>Sucursal</label>
-                    <span>#{{ boleto.sucursal_id }}</span>
+                    <span>{{ boleto.sucursal_nombre }}</span>
                 </div>
 
                 <div class="info-item">
@@ -327,7 +327,7 @@
 
     <!-- BOTONES EXTERNOS AL TICKET -->
     <div class="actions">
-        <a href="{{ url_for('index') }}" class="btn-back">← Volver al inicio</a>
+        <a href="{{ url_for('main.index') }}" class="btn-back">← Volver al inicio</a>
         <button class="btn-print" onclick="window.print()">🖨 Imprimir boleto</button>
     </div>
 </div>
